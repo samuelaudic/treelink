@@ -2,15 +2,15 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: treelinkdb
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
 
   backend:
     build: ./backend
@@ -27,3 +27,6 @@ services:
       - "5173:5173"
     depends_on:
       - backend
+
+volumes:
+  postgres_data:
