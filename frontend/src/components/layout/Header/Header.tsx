@@ -18,6 +18,7 @@ const Header: React.FC = () => {
           alignItems: "center",
           gap: "10px",
           width: "100%",
+          padding: "0 4%",
         }}
       >
         <div className={styles.logo}>
