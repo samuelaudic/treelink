@@ -1,3 +1,6 @@
+// src/components/MemberList.tsx
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Button,
   Paper,
@@ -7,81 +10,41 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-
-type MemberType = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  gender: string;
-  birthDate: string;
-  deathDate: string;
-  fatherId: number;
-  motherId: number;
-  spouseId: number;
-};
+import { MemberType } from "../../../types/MemberType";
+import MemberForm from "./MemberForm/MemberForm";
 
 const MemberList: React.FC = () => {
   const [members, setMembers] = useState<MemberType[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editMemberId, setEditMemberId] = useState<number | null>(null);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [gender, setGender] = useState("");
-  const [birthDate, setBirthDate] = useState("");
-  const [deathDate, setDeathDate] = useState("");
-  const [fatherId, setFatherId] = useState<number | null>(null);
-  const [motherId, setMotherId] = useState<number | null>(null);
-  const [spouseId, setSpouseId] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editMember, setEditMember] = useState<MemberType | null>(null);
 
   useEffect(() => {
+    // Charger les membres depuis l'API backend
     fetch("http://localhost:3000/api/members")
       .then((res) => res.json())
       .then((data) => setMembers(data))
       .catch((error) => console.error("Erreur:", error));
   }, []);
 
-  const handleEdit = (member: MemberType) => {
-    setIsEditing(true);
-    setEditMemberId(member.id);
-    setFirstName(member.firstName);
-    setLastName(member.lastName);
-    setGender(member.gender);
-    setBirthDate(member.birthDate || "");
-    setDeathDate(member.deathDate || "");
-    setFatherId(member.fatherId || null);
-    setMotherId(member.motherId || null);
-    setSpouseId(member.spouseId || null);
+  // Ouvrir la modale pour ajouter/modifier un membre
+  const openModal = (member: MemberType | null = null) => {
+    setEditMember(member);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    fetch(`http://localhost:3000/api/members/${id}`, {
-      method: "DELETE",
-    })
-      .then(() => {
-        setMembers(members.filter((member) => member.id !== id));
-      })
-      .catch((error) => console.error("Erreur:", error));
+  // Fermer la modale
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditMember(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const memberData = {
-      firstName,
-      lastName,
-      gender,
-      birthDate,
-      deathDate,
-      fatherId,
-      motherId,
-      spouseId,
-    };
-
-    if (isEditing && editMemberId) {
-      // Update an existing member
-      fetch(`http://localhost:3000/api/members/${editMemberId}`, {
+  // Soumettre le formulaire d'ajout/modification
+  const handleSubmit = (memberData: Partial<MemberType>) => {
+    if (editMember) {
+      // Mettre à jour le membre existant
+      fetch(`http://localhost:3000/api/members/${editMember.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -92,14 +55,13 @@ const MemberList: React.FC = () => {
         .then((updatedMember) => {
           setMembers(
             members.map((member) =>
-              member.id === editMemberId ? updatedMember : member
+              member.id === editMember.id ? updatedMember : member
             )
           );
-          resetForm();
         })
         .catch((error) => console.error("Erreur:", error));
     } else {
-      // Create a new member
+      // Ajouter un nouveau membre
       fetch("http://localhost:3000/api/members", {
         method: "POST",
         headers: {
@@ -110,90 +72,46 @@ const MemberList: React.FC = () => {
         .then((res) => res.json())
         .then((newMember) => {
           setMembers([...members, newMember]);
-          resetForm();
         })
         .catch((error) => console.error("Erreur:", error));
     }
+    closeModal(); // Fermer la modale après soumission
   };
 
-  const resetForm = () => {
-    setIsEditing(false);
-    setEditMemberId(null);
-    setFirstName("");
-    setLastName("");
-    setGender("");
-    setBirthDate("");
-    setDeathDate("");
-    setFatherId(null);
-    setMotherId(null);
-    setSpouseId(null);
+  // Supprimer un membre
+  const handleDelete = (id: number) => {
+    fetch(`http://localhost:3000/api/members/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        setMembers(members.filter((member) => member.id !== id));
+      })
+      .catch((error) => console.error("Erreur:", error));
   };
 
   return (
-    <div style={{ padding: "0 4%" }}>
-      <h2>{isEditing ? "Modifier un membre" : "Ajouter un membre"}</h2>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Prénom"
-          value={firstName}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <TextField
-          label="Nom"
-          value={lastName}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
-        <TextField
-          label="Genre"
-          value={gender}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setGender(e.target.value)}
-          required
-        />
-        <TextField
-          label="Date de naissance"
-          type="date"
-          value={birthDate}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setBirthDate(e.target.value)}
-        />
-        <TextField
-          label="Date de décès"
-          type="date"
-          value={deathDate}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setDeathDate(e.target.value)}
-        />
-        <TextField
-          label="ID Père"
-          type="number"
-          value={fatherId || ""}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setFatherId(Number(e.target.value))}
-        />
-        <TextField
-          label="ID Mère"
-          type="number"
-          value={motherId || ""}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setMotherId(Number(e.target.value))}
-        />
-        <TextField
-          label="ID Conjoint"
-          type="number"
-          value={spouseId || ""}
-          style={{ color: "black", backgroundColor: "white" }}
-          onChange={(e) => setSpouseId(Number(e.target.value))}
-        />
-        <Button type="submit">{isEditing ? "Modifier" : "Ajouter"}</Button>
-      </form>
+    <div>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={() => openModal()}
+        style={{ display: "flex", gap: "8px", alignItems: "center" }}
+      >
+        <FontAwesomeIcon icon={faPlus} size="1x" />
+        Ajouter un membre
+      </Button>
 
-      <h2>Liste des membres</h2>
-      <TableContainer component={Paper}>
+      {/* MODALE */}
+      <MemberForm
+        open={isModalOpen}
+        handleClose={closeModal}
+        handleSubmit={handleSubmit}
+        initialMemberData={editMember}
+        members={members}
+      />
+
+      {/* Tableau des membres */}
+      <TableContainer component={Paper} sx={{ marginTop: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -201,7 +119,6 @@ const MemberList: React.FC = () => {
               <TableCell>Nom</TableCell>
               <TableCell>Genre</TableCell>
               <TableCell>Date de naissance</TableCell>
-              <TableCell>Date de décès</TableCell>
               <TableCell>Père</TableCell>
               <TableCell>Mère</TableCell>
               <TableCell>Conjoint</TableCell>
@@ -215,13 +132,24 @@ const MemberList: React.FC = () => {
                 <TableCell>{member.lastName}</TableCell>
                 <TableCell>{member.gender}</TableCell>
                 <TableCell>{member.birthDate}</TableCell>
-                <TableCell>{member.deathDate}</TableCell>
-                <TableCell>{member.fatherId}</TableCell>
-                <TableCell>{member.motherId}</TableCell>
-                <TableCell>{member.spouseId}</TableCell>
                 <TableCell>
-                  <Button onClick={() => handleEdit(member)}>Modifier</Button>
-                  <Button onClick={() => handleDelete(member.id)}>
+                  {member.fatherId
+                    ? members.find((m) => m.id === member.fatherId)?.firstName
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {member.motherId
+                    ? members.find((m) => m.id === member.motherId)?.firstName
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  {member.spouseId
+                    ? members.find((m) => m.id === member.spouseId)?.firstName
+                    : "N/A"}
+                </TableCell>
+                <TableCell>
+                  <Button onClick={() => openModal(member)}>Modifier</Button>
+                  <Button color="error" onClick={() => handleDelete(member.id)}>
                     Supprimer
                   </Button>
                 </TableCell>
