@@ -1,12 +1,9 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "./node_modules/.prisma/client"
+  previewFeatures = ["interactiveTransactions"]
+  binaryTargets   = ["native"]
+  log             = ["query", "info", "warn"]
 }
 
 datasource db {
@@ -15,14 +12,20 @@ datasource db {
 }
 
 model Member {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   firstName  String
   lastName   String
   gender     String
   birthDate  DateTime?
   deathDate  DateTime?
+  father     Member?   @relation("FatherRelation", fields: [fatherId], references: [id])
   fatherId   Int?
+  mother     Member?   @relation("MotherRelation", fields: [motherId], references: [id])
   motherId   Int?
+  spouse     Member?   @relation("SpouseRelation", fields: [spouseId], references: [id])
   spouseId   Int?
-  createdAt  DateTime @default(now())
+  spouseOf   Member[]  @relation("SpouseRelation")
+  children   Member[]  @relation("FatherRelation")
+  childrenMother Member[] @relation("MotherRelation")
+  createdAt  DateTime  @default(now())
 }
