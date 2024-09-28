@@ -1,0 +1,26 @@
+.container {
+  padding: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+}
+
+.headerColumn {
+  padding: 0 20px 0 0;
+}
+
+.cell {
+  padding: 0 20px 0 0;
+  color: #ffffff;
+  font-size: 15px;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
