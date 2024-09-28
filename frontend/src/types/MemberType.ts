@@ -3,12 +3,13 @@ export type MemberType = {
   firstName: string;
   lastName: string;
   gender: string;
-  birthDate?: string;
-  deathDate?: string;
+  birthDate: Date;
+  deathDate: Date | null;
   father: MemberType | null;
-  fatherId?: number;
+  fatherId: number | null;
   mother: MemberType | null;
-  motherId?: number;
+  motherId: number | null;
   spouse: MemberType | null;
-  spouseId?: number;
+  spouseId: number | null;
+  createdAt: Date;
 };
