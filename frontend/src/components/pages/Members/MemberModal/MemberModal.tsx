@@ -1,27 +1,25 @@
-import React from "react";
-import { MemberType } from "../../../../types/MemberType";
+import { Member } from "../../../../interfaces/Member";
 import MemberForm from "./MemberForm/MemberForm";
 
 interface MemberModalProps {
-  member: MemberType | null;
+  member: Member | null;
   isOpen: boolean;
-  onSave: (member: MemberType) => void;
   onClose: () => void;
+  onSave: (member: Member) => void;
 }
 
 const MemberModal: React.FC<MemberModalProps> = ({
   member,
   isOpen,
-  onSave,
   onClose,
+  onSave,
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div>
-      <div className="modal-overlay" />
+    <div className="modal">
       <div className="modal-content">
-        <MemberForm member={member} onSave={onSave} onClose={onClose} />
+        <MemberForm member={member} onClose={onClose} onSave={onSave} />
       </div>
     </div>
   );

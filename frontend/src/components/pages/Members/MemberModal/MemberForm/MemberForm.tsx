@@ -1,22 +1,27 @@
 import { useEffect, useState } from "react";
-import { MemberType } from "../../../../../types/MemberType";
+import { Member } from "../../../../../interfaces/Member";
 
 interface MemberFormProps {
-  member: MemberType | null;
-  onSave: (member: MemberType) => void;
+  member: Member | null;
   onClose: () => void;
+  onSave: (member: Member) => void;
 }
 
-const MemberForm: React.FC<MemberFormProps> = ({ member, onSave, onClose }) => {
-  const [formData, setFormData] = useState<MemberType>({
+const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
+  const [formData, setFormData] = useState<Member>({
     id: 0,
     firstName: "",
     lastName: "",
     gender: "",
     birthDate: new Date(),
-    fatherId: null,
-    motherId: null,
-    spouseId: null,
+    deathDate: new Date(),
+    father: null,
+    fatherId: 0,
+    mother: null,
+    motherId: 0,
+    spouse: null,
+    spouseId: 0,
+    createdAt: new Date(),
   });
 
   useEffect(() => {
@@ -29,9 +34,14 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onSave, onClose }) => {
         lastName: "",
         gender: "",
         birthDate: new Date(),
-        fatherId: null,
-        motherId: null,
-        spouseId: null,
+        deathDate: new Date(),
+        father: null,
+        fatherId: 0,
+        mother: null,
+        motherId: 0,
+        spouse: null,
+        spouseId: 0,
+        createdAt: new Date(),
       });
     }
   }, [member]);
@@ -65,6 +75,24 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onSave, onClose }) => {
         value={formData.gender}
         onChange={handleChange}
         placeholder="Genre"
+      />
+      <input
+        type="date"
+        name="birthDate"
+        value={formData.birthDate.toISOString().split("T")[0]}
+        onChange={handleChange}
+        placeholder="Date de naissance"
+      />
+      <input
+        type="date"
+        name="deathDate"
+        value={
+          formData.deathDate
+            ? formData.deathDate.toISOString().split("T")[0]
+            : ""
+        }
+        onChange={handleChange}
+        placeholder="Date de décès"
       />
       <button type="submit">Enregistrer</button>
       <button type="button" onClick={onClose}>

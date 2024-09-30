@@ -1,15 +1,15 @@
-export type MemberType = {
+export interface Member {
   id: number;
   firstName: string;
   lastName: string;
   gender: string;
   birthDate: Date;
   deathDate: Date | null;
-  father: MemberType | null;
+  father: Member | null;
   fatherId: number | null;
-  mother: MemberType | null;
+  mother: Member | null;
   motherId: number | null;
-  spouse: MemberType | null;
+  spouse: Member | null;
   spouseId: number | null;
   createdAt: Date;
-};
+}

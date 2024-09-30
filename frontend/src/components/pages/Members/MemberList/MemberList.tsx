@@ -1,5 +1,4 @@
 import {
-  getKeyValue,
   Table,
   TableBody,
   TableCell,
@@ -7,93 +6,42 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import React, { useEffect, useState } from "react";
-import { MemberType } from "../../../../types/MemberType";
-import MemberModal from "../MemberModal/MemberModal";
-import Columns from "./Columns";
-import MembersData from "./MembersData";
+import { Member } from "../../../../interfaces/Member";
 import styles from "./MembersList.module.scss";
 
-const MemberList: React.FC = () => {
-  const [members, setMembers] = useState<MemberType[]>([]);
-  const [selectedMember, setSelectedMember] = useState<MemberType | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+interface MemberListProps {
+  members: Member[];
+  onEdit: (member: Member) => void;
+}
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  useEffect(() => {
-    // TODOREVIEW SA : Replace with API call
-    setMembers(MembersData);
-  }, []);
-
-  const handleEdit = (member: MemberType) => {
-    setSelectedMember(member);
-    setIsModalOpen(true);
-  };
-
-  const handleAdd = () => {
-    setSelectedMember(null);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = (id: number) => {
-    setMembers(members.filter((member) => member.id !== id));
-  };
-
-  const handleSave = (member: MemberType) => {
-    if (member.id) {
-      // Edit
-      setMembers(members.map((m) => (m.id === member.id ? member : m)));
-    } else {
-      // Add
-      setMembers([...members, { ...member, id: members.length + 1 }]);
-    }
-    setIsModalOpen(false);
-  };
+const MemberList: React.FC<MemberListProps> = ({ members, onEdit }) => {
+  const formatDate = (date: Date | null | undefined) =>
+    date ? new Date(date).toLocaleDateString("fr-FR") : "N/A";
 
   return (
-    <div className={styles.container}>
-      <button onClick={handleAdd}>+ Ajouter un membre</button>
+    <div className={styles.containerTable}>
       <Table aria-label="Tableau des membres" className={styles.table}>
-        <TableHeader columns={Columns}>
-          {(column) => (
-            <TableColumn key={column.key} className={styles.headerColumn}>
-              {column.label}
-            </TableColumn>
-          )}
+        <TableHeader>
+          <TableColumn>Prénom</TableColumn>
+          <TableColumn>Nom</TableColumn>
+          <TableColumn>Genre</TableColumn>
+          <TableColumn>Date de naissance</TableColumn>
+          <TableColumn>Action</TableColumn>
         </TableHeader>
-        <TableBody items={members}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell className={styles.cell}>
-                  {columnKey === "birthDate" || columnKey === "deathDate"
-                    ? formatDate(item[columnKey as keyof MemberType] as Date)
-                    : columnKey === "fatherId" ||
-                      columnKey === "motherId" ||
-                      columnKey === "spouseId"
-                    ? members.find(
-                        (m) => m.id === item[columnKey as keyof MemberType]
-                      )?.firstName || "N/A"
-                    : getKeyValue(item, columnKey)}
-                </TableCell>
-              )}
+        <TableBody>
+          {members.map((member) => (
+            <TableRow key={member.id}>
+              <TableCell>{member.firstName}</TableCell>
+              <TableCell>{member.lastName}</TableCell>
+              <TableCell>{member.gender}</TableCell>
+              <TableCell>{formatDate(member.birthDate)}</TableCell>
+              <TableCell>
+                <button onClick={() => onEdit(member)}>Modifier</button>
+              </TableCell>
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
-      <MemberModal
-        member={selectedMember}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-      />
     </div>
   );
 };
