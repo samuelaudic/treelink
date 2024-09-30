@@ -1,6 +1,6 @@
 // MembersList.ts
 
-import { MemberType } from "../../../../types/MemberType";
+import { MemberType } from "../../../../interfaces/Member";
 
 const MembersData: MemberType[] = [
   {
