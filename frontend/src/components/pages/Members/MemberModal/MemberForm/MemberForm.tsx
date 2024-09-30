@@ -46,7 +46,11 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
     }
   }, [member]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -70,12 +74,15 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
         onChange={handleChange}
         placeholder="Nom"
       />
-      <input
+      <select
         name="gender"
         value={formData.gender}
         onChange={handleChange}
-        placeholder="Genre"
-      />
+        required
+      >
+        <option value="M">M</option>
+        <option value="F">F</option>
+      </select>
       <input
         type="date"
         name="birthDate"
