@@ -10,11 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  M
+  F
+}
+
 model Member {
   id         Int       @id @default(autoincrement())
   firstName  String
   lastName   String
-  gender     String
+  gender     Gender    @default(M)
   birthDate  DateTime?
   deathDate  DateTime?
   father     Member?   @relation("FatherRelation", fields: [fatherId], references: [id])
