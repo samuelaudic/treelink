@@ -1,7 +1,7 @@
-const memberService = require("../services/memberService");
+import * as memberService from "../services/memberService";
 
 // Récupérer tous les membres
-exports.getAllMembers = async (req, res) => {
+export const getAllMembers = async (req, res) => {
   try {
     const members = await memberService.getAllMembers();
     res.json(members);
@@ -14,7 +14,7 @@ exports.getAllMembers = async (req, res) => {
 };
 
 // Récupérer un membre par son id
-exports.getMemberById = async (req, res) => {
+export const getMemberById = async (req, res) => {
   const { id } = req.params;
   try {
     const member = await memberService.getMemberById(id);
@@ -30,7 +30,7 @@ exports.getMemberById = async (req, res) => {
 };
 
 // Créer un nouveau membre
-exports.createMember = async (req, res) => {
+export const createMember = async (req, res) => {
   const memberData = req.body;
   try {
     const newMember = await memberService.createMember(memberData);
@@ -42,7 +42,7 @@ exports.createMember = async (req, res) => {
 };
 
 // Mettre à jour un membre
-exports.updateMember = async (req, res) => {
+export const updateMember = async (req, res) => {
   const { id } = req.params;
   const memberData = req.body;
   try {
@@ -55,7 +55,7 @@ exports.updateMember = async (req, res) => {
 };
 
 // Supprimer un membre
-exports.deleteMember = async (req, res) => {
+export const deleteMember = async (req, res) => {
   const { id } = req.params;
   try {
     await memberService.deleteMember(id);

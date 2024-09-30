@@ -1,12 +1,11 @@
-const express = require("express");
-const memberController = require("../controllers/memberController");
+import express from "express";
+import * as memberController from "../controllers/memberController";
+
 const router = express.Router();
 
 // Routes pour les membres
-router.get("/", memberController.getAllMembers);
-router.get("/:id", memberController.getMemberById);
-router.post("/", memberController.createMember);
-router.put("/:id", memberController.updateMember);
-router.delete("/:id", memberController.deleteMember);
-
-module.exports = router;
+router.get("/", memberController.getAllMembers); // Récupérer tous les membres
+router.get("/:id", memberController.getMemberById); // Récupérer un membre par ID
+router.post("/", memberController.createMember); // Créer un nouveau membre
+router.put("/:id", memberController.updateMember); // Mettre à jour un membre existant
+router.delete("/:id", memberController.deleteMember); // Supprimer un membre

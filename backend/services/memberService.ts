@@ -1,8 +1,8 @@
-const { PrismaClient } = require("@prisma/client");
+import { Member, Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 // Récupérer tous les membres
-exports.getAllMembers = async () => {
+export const getAllMembers = async (): Promise<Member[]> => {
   return await prisma.member.findMany({
     include: {
       father: true,
@@ -15,9 +15,9 @@ exports.getAllMembers = async () => {
 };
 
 // Récupérer un membre par ID
-exports.getMemberById = async (id) => {
+export const getMemberById = async (id: number): Promise<Member | null> => {
   return await prisma.member.findUnique({
-    where: { id: parseInt(id) },
+    where: { id: id },
     include: {
       father: true,
       mother: true,
@@ -29,23 +29,28 @@ exports.getMemberById = async (id) => {
 };
 
 // Créer un nouveau membre
-exports.createMember = async (memberData) => {
+export const createMember = async (
+  memberData: Prisma.MemberCreateInput
+): Promise<Member> => {
   return await prisma.member.create({
     data: memberData,
   });
 };
 
 // Mettre à jour un membre existant
-exports.updateMember = async (id, memberData) => {
+export const updateMember = async (
+  id: number,
+  memberData: Prisma.MemberUpdateInput
+): Promise<Member> => {
   return await prisma.member.update({
-    where: { id: parseInt(id) },
+    where: { id: id },
     data: memberData,
   });
 };
 
 // Supprimer un membre
-exports.deleteMember = async (id) => {
+export const deleteMember = async (id: number): Promise<Member> => {
   return await prisma.member.delete({
-    where: { id: parseInt(id) },
+    where: { id: id },
   });
 };
