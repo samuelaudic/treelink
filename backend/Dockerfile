@@ -2,15 +2,21 @@ FROM node:16
 
 WORKDIR /app
 
+# Installer les dépendances
 COPY package*.json ./
 RUN npm install
 
-RUN apt-get update && apt-get install -y postgresql-client
+# Installer Prisma globalement
+RUN npm install -g prisma
 
+# Copier le reste du projet
 COPY . .
 
-RUN npx prisma generate
+# Générer le client Prisma
+RUN prisma generate
 
+# Exposer le port pour l'application
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+# Démarrer le serveur Node.js
+CMD ["node", "dist/server.js"]

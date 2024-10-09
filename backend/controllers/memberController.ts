@@ -1,7 +1,8 @@
+import { Request, Response } from "express"; // Import des types depuis Express
 import * as memberService from "../services/memberService";
 
 // Récupérer tous les membres
-export const getAllMembers = async (req, res) => {
+export const getAllMembers = async (req: Request, res: Response) => {
   try {
     const members = await memberService.getAllMembers();
     res.json(members);
@@ -14,10 +15,10 @@ export const getAllMembers = async (req, res) => {
 };
 
 // Récupérer un membre par son id
-export const getMemberById = async (req, res) => {
+export const getMemberById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const member = await memberService.getMemberById(id);
+    const member = await memberService.getMemberById(Number(id));
     if (member) {
       res.json(member);
     } else {
@@ -30,7 +31,7 @@ export const getMemberById = async (req, res) => {
 };
 
 // Créer un nouveau membre
-export const createMember = async (req, res) => {
+export const createMember = async (req: Request, res: Response) => {
   const memberData = req.body;
   try {
     const newMember = await memberService.createMember(memberData);
@@ -42,11 +43,14 @@ export const createMember = async (req, res) => {
 };
 
 // Mettre à jour un membre
-export const updateMember = async (req, res) => {
+export const updateMember = async (req: Request, res: Response) => {
   const { id } = req.params;
   const memberData = req.body;
   try {
-    const updatedMember = await memberService.updateMember(id, memberData);
+    const updatedMember = await memberService.updateMember(
+      Number(id),
+      memberData
+    );
     res.json(updatedMember);
   } catch (error) {
     console.error(error);
@@ -55,10 +59,10 @@ export const updateMember = async (req, res) => {
 };
 
 // Supprimer un membre
-export const deleteMember = async (req, res) => {
+export const deleteMember = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    await memberService.deleteMember(id);
+    await memberService.deleteMember(Number(id));
     res.status(204).send();
   } catch (error) {
     console.error(error);

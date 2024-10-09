@@ -2,24 +2,70 @@ import { Member } from "../interfaces/Member";
 
 const API_URL = "http://localhost:3000/api/members";
 
+// Fonction pour vérifier le statut des réponses
+const checkResponseStatus = (response: Response) => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+  return response;
+};
+
 export const getMembers = async (): Promise<Member[]> => {
-  const response = await fetch(API_URL);
-  return response.json();
+  try {
+    const response = await fetch(API_URL);
+    checkResponseStatus(response);
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des membres:", error);
+    throw error;
+  }
 };
 
 export const saveMember = async (member: Member): Promise<Member> => {
-  const method = member.id ? "PUT" : "POST";
-  const url = member.id ? `${API_URL}/${member.id}` : API_URL;
+  try {
+    const method = member.id ? "PUT" : "POST";
+    const url = member.id ? `${API_URL}/${member.id}` : API_URL;
 
-  const response = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(member),
-  });
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(member),
+    });
 
-  return response.json();
+    checkResponseStatus(response);
+    return await response.json();
+  } catch (error) {
+    console.error(
+      `Erreur lors de l'enregistrement du membre: ${member.id}`,
+      error
+    );
+    throw error;
+  }
 };
 
 export const deleteMember = async (id: number): Promise<void> => {
-  await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  try {
+    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    checkResponseStatus(response);
+  } catch (error) {
+    console.error(
+      `Erreur lors de la suppression du membre avec ID: ${id}`,
+      error
+    );
+    throw error;
+  }
+};
+
+export const getMember = async (id: number): Promise<Member> => {
+  try {
+    const response = await fetch(`${API_URL}/${id}`);
+    checkResponseStatus(response);
+    return await response.json();
+  } catch (error) {
+    console.error(
+      `Erreur lors de la récupération du membre avec ID: ${id}`,
+      error
+    );
+    throw error;
+  }
 };
