@@ -1,13 +1,5 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@nextui-org/react";
+import React from "react";
 import { Member } from "../../../../interfaces/Member";
-import styles from "./MembersList.module.scss";
 
 interface MemberListProps {
   members: Member[];
@@ -19,58 +11,58 @@ const MemberList: React.FC<MemberListProps> = ({ members, onEdit }) => {
     date ? new Date(date).toLocaleDateString("fr-FR") : "N/A";
 
   return (
-    <div className={styles.containerTable}>
-      <Table aria-label="Tableau des membres" className={styles.table}>
-        <TableHeader>
-          <TableColumn>Prénom</TableColumn>
-          <TableColumn>Nom</TableColumn>
-          <TableColumn>Genre</TableColumn>
-          <TableColumn>Date de naissance</TableColumn>
-          <TableColumn>Date de décès</TableColumn>
-          <TableColumn>Père</TableColumn>
-          <TableColumn>Mère</TableColumn>
-          <TableColumn>Conjoint</TableColumn>
-          <TableColumn>Actions</TableColumn>
-        </TableHeader>
-        <TableBody>
-          {Array.isArray(members) && members.length > 0 ? (
-            members.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>{member.firstName}</TableCell>
-                <TableCell>{member.lastName}</TableCell>
-                <TableCell>{member.gender}</TableCell>
-                <TableCell>{formatDate(member.birthDate)}</TableCell>
-                <TableCell>{formatDate(member.deathDate)}</TableCell>
-                <TableCell>
-                  {member.father
-                    ? `${member.father.firstName} ${member.father.lastName}`
-                    : "N/A"}
-                </TableCell>
-                <TableCell>
-                  {member.mother
-                    ? `${member.mother.firstName} ${member.mother.lastName}`
-                    : "N/A"}
-                </TableCell>
-                <TableCell>
-                  {member.spouse
-                    ? `${member.spouse.firstName} ${member.spouse.lastName}`
-                    : "N/A"}
-                </TableCell>
-                <TableCell>
-                  <button onClick={() => onEdit(member)} disabled={!member.id}>
-                    Modifier
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={9}>Aucun membre trouvé</TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Prénom</th>
+          <th>Nom</th>
+          <th>Genre</th>
+          <th>Date de naissance</th>
+          <th>Date de décès</th>
+          <th>Père</th>
+          <th>Mère</th>
+          <th>Conjoint</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {members.length > 0 ? (
+          members.map((member) => (
+            <tr key={member.id}>
+              <td>{member.firstName}</td>
+              <td>{member.lastName}</td>
+              <td>{member.gender}</td>
+              <td>{formatDate(member.birthDate)}</td>
+              <td>{formatDate(member.deathDate)}</td>
+              <td>
+                {member.father
+                  ? `${member.father.firstName} ${member.father.lastName}`
+                  : "N/A"}
+              </td>
+              <td>
+                {member.mother
+                  ? `${member.mother.firstName} ${member.mother.lastName}`
+                  : "N/A"}
+              </td>
+              <td>
+                {member.spouse
+                  ? `${member.spouse.firstName} ${member.spouse.lastName}`
+                  : "N/A"}
+              </td>
+              <td>
+                <button onClick={() => onEdit(member)} disabled={!member.id}>
+                  Modifier
+                </button>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={9}>Aucun membre trouvé</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
   );
 };
 

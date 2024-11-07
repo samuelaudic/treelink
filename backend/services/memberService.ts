@@ -1,51 +1,118 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+import { Member, Prisma, PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
 
 // Récupérer tous les membres
-exports.getAllMembers = async () => {
-  return await prisma.member.findMany({
-    include: {
-      father: true,
-      mother: true,
-      spouse: true,
-      children: true,
-      childrenMother: true,
-    },
-  });
+export const getAllMembers = async (): Promise<Member[]> => {
+  try {
+    return await prisma.member.findMany({
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        gender: true,
+        birthDate: true,
+        deathDate: true,
+        fatherId: true,
+        motherId: true,
+        spouseId: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des membres:", error);
+    throw new Error("Erreur lors de la récupération des membres");
+  }
 };
 
 // Récupérer un membre par ID
-exports.getMemberById = async (id) => {
-  return await prisma.member.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      father: true,
-      mother: true,
-      spouse: true,
-      children: true,
-      childrenMother: true,
-    },
-  });
+export const getMemberById = async (id: number): Promise<Member | null> => {
+  try {
+    return await prisma.member.findUnique({
+      where: { id: id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        gender: true,
+        birthDate: true,
+        deathDate: true,
+        fatherId: true,
+        motherId: true,
+        spouseId: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Erreur lors de la récupération du membre avec l'ID ${id}:`,
+      error
+    );
+    throw new Error(`Erreur lors de la récupération du membre avec l'ID ${id}`);
+  }
 };
 
 // Créer un nouveau membre
-exports.createMember = async (memberData) => {
+export const createMember = async (
+  memberData: Prisma.MemberCreateInput
+): Promise<Member> => {
   return await prisma.member.create({
-    data: memberData,
+    data: {
+      firstName: memberData.firstName,
+      lastName: memberData.lastName,
+      gender: memberData.gender,
+      birthDate: memberData.birthDate,
+      deathDate: memberData.deathDate,
+      fatherId: memberData.fatherId,
+      motherId: memberData.motherId,
+      spouseId: memberData.spouseId,
+      createdAt: memberData.createdAt,
+    },
   });
 };
 
 // Mettre à jour un membre existant
-exports.updateMember = async (id, memberData) => {
-  return await prisma.member.update({
-    where: { id: parseInt(id) },
-    data: memberData,
-  });
+export const updateMember = async (
+  id: number,
+  memberData: Prisma.MemberUpdateInput
+): Promise<Member> => {
+  try {
+    return await prisma.member.update({
+      where: { id: id },
+      data: {
+        firstName: memberData.firstName,
+        lastName: memberData.lastName,
+        gender: memberData.gender,
+        birthDate: memberData.birthDate,
+        deathDate: memberData.deathDate,
+        fatherId: memberData.fatherId,
+        motherId: memberData.motherId,
+        spouseId: memberData.spouseId,
+        createdAt: memberData.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error(
+      `Erreur lors de la mise à jour du membre avec l'ID ${id}:`,
+      error
+    );
+    throw new Error(`Erreur lors de la mise à jour du membre avec l'ID ${id}`);
+  }
 };
 
 // Supprimer un membre
-exports.deleteMember = async (id) => {
-  return await prisma.member.delete({
-    where: { id: parseInt(id) },
-  });
+export const deleteMember = async (id: number): Promise<Member> => {
+  try {
+    return await prisma.member.delete({
+      where: { id: id },
+    });
+  } catch (error) {
+    console.error(
+      `Erreur lors de la suppression du membre avec l'ID ${id}:`,
+      error
+    );
+    throw new Error(`Erreur lors de la suppression du membre avec l'ID ${id}`);
+  }
 };

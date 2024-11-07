@@ -12,7 +12,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
     id: 0,
     firstName: "",
     lastName: "",
-    gender: "",
+    gender: "M",
     birthDate: new Date(),
     deathDate: new Date(),
     father: null,
@@ -24,6 +24,13 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
     createdAt: new Date(),
   });
 
+  // Fonction utilitaire pour formater la date en 'YYYY-MM-DD'
+  const formatDateForInput = (date: Date | null | undefined): string => {
+    return date instanceof Date && !isNaN(date.getTime())
+      ? date.toISOString().split("T")[0]
+      : "";
+  };
+
   useEffect(() => {
     if (member) {
       setFormData(member);
@@ -32,7 +39,7 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
         id: 0,
         firstName: "",
         lastName: "",
-        gender: "",
+        gender: "M",
         birthDate: new Date(),
         deathDate: new Date(),
         father: null,
@@ -52,7 +59,20 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
       | React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    if (name === "birthDate" || name === "deathDate") {
+      // Gestion des dates
+      setFormData({
+        ...formData,
+        [name]: new Date(value),
+      });
+    } else {
+      // Pour les autres champs
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -86,20 +106,17 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onClose, onSave }) => {
       <input
         type="date"
         name="birthDate"
-        value={formData.birthDate.toISOString().split("T")[0]}
+        value={formatDateForInput(formData.birthDate)}
         onChange={handleChange}
         placeholder="Date de naissance"
       />
       <input
         type="date"
         name="deathDate"
-        value={
-          formData.deathDate
-            ? formData.deathDate.toISOString().split("T")[0]
-            : ""
-        }
+        value={formatDateForInput(formData.deathDate)}
         onChange={handleChange}
         placeholder="Date de décès"
+        defaultValue={formatDateForInput(new Date())}
       />
       <button type="submit">Enregistrer</button>
       <button type="button" onClick={onClose}>

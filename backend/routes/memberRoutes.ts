@@ -1,5 +1,6 @@
-const express = require("express");
-const memberController = require("../controllers/memberController");
+import express from "express";
+import * as memberController from "../controllers/memberController";
+
 const router = express.Router();
 
 // Routes pour les membres
@@ -9,4 +10,4 @@ router.post("/", memberController.createMember);
 router.put("/:id", memberController.updateMember);
 router.delete("/:id", memberController.deleteMember);
 
-module.exports = router;
+export default router;

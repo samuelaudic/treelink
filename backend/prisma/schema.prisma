@@ -16,20 +16,20 @@ enum Gender {
 }
 
 model Member {
-  id         Int       @id @default(autoincrement())
-  firstName  String
-  lastName   String
-  gender     Gender    @default(M)
-  birthDate  DateTime?
-  deathDate  DateTime?
-  father     Member?   @relation("FatherRelation", fields: [fatherId], references: [id])
-  fatherId   Int?
-  mother     Member?   @relation("MotherRelation", fields: [motherId], references: [id])
-  motherId   Int?
-  spouse     Member?   @relation("SpouseRelation", fields: [spouseId], references: [id])
-  spouseId   Int?
-  spouseOf   Member[]  @relation("SpouseRelation")
-  children   Member[]  @relation("FatherRelation")
-  childrenMother Member[] @relation("MotherRelation")
-  createdAt  DateTime  @default(now())
+  id             Int       @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  gender         Gender    @default(M)
+  birthDate      DateTime?
+  deathDate      DateTime?
+  father         Member?   @relation("FatherRelation", fields: [fatherId], references: [id])
+  fatherId       Int?
+  mother         Member?   @relation("MotherRelation", fields: [motherId], references: [id])
+  motherId       Int?
+  spouse         Member?   @relation("SpouseRelation", fields: [spouseId], references: [id])
+  spouseId       Int?
+  spouseOf       Member[]  @relation("SpouseRelation")
+  children       Member[]  @relation("FatherRelation")
+  childrenMother Member[]  @relation("MotherRelation")
+  createdAt      DateTime  @default(now())
 }
