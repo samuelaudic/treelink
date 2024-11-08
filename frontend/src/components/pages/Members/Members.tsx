@@ -1,55 +1,43 @@
+import { Member } from "@/interfaces/Member";
 import { useEffect, useState } from "react";
-import { Member } from "../../../interfaces/Member";
-import { getMembers, saveMember } from "../../../services/MemberService";
-import MemberList from "./MemberList/MemberList";
-import MemberModal from "./MemberModal/MemberModal";
+import { columns } from "./columns";
+import { DataTable } from "./datatable";
+
+async function getData(): Promise<Member[]> {
+  // Fetch data from your API here.
+  const members: Member[] = [];
+  for (let i = 0; i < 50; i++) {
+    members.push({
+      id: i,
+      firstName: `First Name ${i}`,
+      lastName: `Last Name ${i}`,
+      gender: "M",
+      birthDate: new Date("2001-11-02"),
+      deathDate: null,
+      father: null,
+      fatherId: null,
+      mother: null,
+      motherId: null,
+      spouse: null,
+      spouseId: null,
+      createdAt: new Date("2021-08-17T00:00:00.000Z"),
+    });
+  }
+  return members;
+}
 
 export const Members = () => {
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [members, setMembers] = useState<Member[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const fetchedMembers = await getMembers();
+    getData().then((fetchedMembers) => {
       setMembers(fetchedMembers);
-    };
-    fetchData();
+    });
   }, []);
 
-  const handleAddMember = () => {
-    setSelectedMember(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEditMember = (member: Member) => {
-    setSelectedMember(member);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveMember = async (member: Member) => {
-    const savedMember = await saveMember(member);
-    if (member.id) {
-      setMembers(
-        members.map((m) => (m.id === savedMember.id ? savedMember : m))
-      );
-    } else {
-      setMembers([...members, savedMember]);
-    }
-    setIsModalOpen(false);
-  };
-
   return (
-    <div className="container">
-      <h1>Membres</h1>
-      <button onClick={handleAddMember}>+ Ajouter un membre</button>
-      <MemberList members={members} onEdit={handleEditMember} />
-      <MemberModal
-        member={selectedMember}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSaveMember}
-      />
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={members} />
     </div>
   );
 };
