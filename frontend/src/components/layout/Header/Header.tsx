@@ -10,6 +10,12 @@ const Header: React.FC = () => {
         </div>
         <nav>
           <ul className="flex gap-6 text-lg">
+            <a href="/" className="flex items-center gap-2">
+              Accueil
+            </a>
+            <a href="/members" className="flex items-center gap-2">
+              Membres
+            </a>
             <ThemeToggle />
           </ul>
         </nav>
