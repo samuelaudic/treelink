@@ -1,59 +1,16 @@
-import {
-  faCog,
-  faHome,
-  faTree,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import styles from "./Header.module.scss";
+import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 
 const Header: React.FC = () => {
   return (
-    <header className={styles.header}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          gap: "10px",
-          width: "100%",
-          padding: "0 4%",
-        }}
-      >
-        <div className={styles.logo}>
-          <FontAwesomeIcon icon={faTree} size="2x" />
-          <h1>TreeLink</h1>
+    <header className="bg-white shadow-md absolute top-0 w-full">
+      <div className="flex justify-between items-center w-full py-4 px-6 max-w-7xl mx-auto">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-gray-800">TreeLink</h1>
         </div>
-        <nav className={styles.nav}>
-          <ul>
-            <li>
-              <a
-                href="/"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-              >
-                <FontAwesomeIcon icon={faHome} size="1x" />
-                Accueil
-              </a>
-            </li>
-            <li>
-              <a
-                href="/members"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-              >
-                <FontAwesomeIcon icon={faUsers} size="1x" />
-                Liste des Membres
-              </a>
-            </li>
-            <li>
-              <a
-                href="/settings"
-                style={{ display: "flex", alignItems: "center", gap: "10px" }}
-              >
-                <FontAwesomeIcon icon={faCog} size="1x" />
-                Paramètres
-              </a>
-            </li>
+        <nav>
+          <ul className="flex gap-6 text-lg">
+            <ThemeToggle />
           </ul>
         </nav>
       </div>
