@@ -3,10 +3,11 @@
     "module": "CommonJS",
     "target": "ES6",
     "outDir": "./dist",
+    "rootDir": "./src",
     "esModuleInterop": true,
     "strict": true,
     "resolveJsonModule": true
   },
-  "include": ["./*.ts", "./routes/**/*.ts"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
