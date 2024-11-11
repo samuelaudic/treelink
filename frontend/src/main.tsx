@@ -5,7 +5,7 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <main>
+    <main className="absolute top-0">
       <App />
     </main>
   </StrictMode>
