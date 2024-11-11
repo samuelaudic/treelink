@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Générer le client Prisma
-RUN prisma generate
+RUN prisma generate --schema=./src/prisma/schema.prisma
 
 # Exposer le port pour l'application
 EXPOSE 3000

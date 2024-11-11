@@ -65,9 +65,9 @@ export const createMember = async (
       gender: memberData.gender,
       birthDate: memberData.birthDate,
       deathDate: memberData.deathDate,
-      fatherId: memberData.fatherId,
-      motherId: memberData.motherId,
-      spouseId: memberData.spouseId,
+      father: memberData.father,
+      mother: memberData.mother,
+      spouse: memberData.spouse,
       createdAt: memberData.createdAt,
     },
   });
@@ -79,6 +79,7 @@ export const updateMember = async (
   memberData: Prisma.MemberUpdateInput
 ): Promise<Member> => {
   try {
+    console.log(memberData);
     return await prisma.member.update({
       where: { id: id },
       data: {
@@ -87,9 +88,9 @@ export const updateMember = async (
         gender: memberData.gender,
         birthDate: memberData.birthDate,
         deathDate: memberData.deathDate,
-        fatherId: memberData.fatherId,
-        motherId: memberData.motherId,
-        spouseId: memberData.spouseId,
+        father: memberData.father,
+        mother: memberData.mother,
+        spouse: memberData.spouse,
         createdAt: memberData.createdAt,
       },
     });
