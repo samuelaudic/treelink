@@ -4,7 +4,7 @@ import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-white shadow-md absolute top-0 w-full">
+    <header className="bg-white shadow-md absolute top-0 w-[100vw]">
       <div className="flex justify-between items-center w-full py-4 px-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           <GitFork className="h-8 w-8 text-green-500" />

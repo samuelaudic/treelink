@@ -2,10 +2,24 @@ import { Member } from "../interfaces/Member";
 
 const API_URL = "http://localhost:3000/api/members";
 
-// Fonction pour vérifier le statut des réponses
+// Fonction pour vérifier le statut des réponses et personnaliser les messages d'erreur
 const checkResponseStatus = (response: Response) => {
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    let errorMessage = `Erreur HTTP! Statut : ${response.status}`;
+    switch (response.status) {
+      case 400:
+        errorMessage = "Requête incorrecte.";
+        break;
+      case 404:
+        errorMessage = "Ressource non trouvée.";
+        break;
+      case 500:
+        errorMessage = "Erreur interne du serveur.";
+        break;
+      default:
+        errorMessage = `Erreur inattendue : ${response.status}`;
+    }
+    throw new Error(errorMessage);
   }
   return response;
 };
@@ -36,7 +50,9 @@ export const saveMember = async (member: Member): Promise<Member> => {
     return await response.json();
   } catch (error) {
     console.error(
-      `Erreur lors de l'enregistrement du membre: ${member.id}`,
+      `Erreur lors de l'enregistrement du membre: ${
+        member.id || "nouveau membre"
+      }`,
       error
     );
     throw error;

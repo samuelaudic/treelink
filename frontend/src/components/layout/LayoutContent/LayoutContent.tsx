@@ -5,5 +5,5 @@ interface LayoutContentProps {
 }
 
 export const LayoutContent = ({ children }: LayoutContentProps) => {
-  return <div className="mt-[68px] w-full">{children}</div>;
+  return <div className="mt-[68px] w-[100vw]">{children}</div>;
 };

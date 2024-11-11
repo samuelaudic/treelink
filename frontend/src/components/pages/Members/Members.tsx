@@ -1,59 +1,44 @@
+import Container from "@/components/layout/Container/Container";
 import { LayoutContent } from "@/components/layout/LayoutContent/LayoutContent";
-import { Button } from "@/components/ui/button";
 import { Member } from "@/interfaces/Member";
+import { getMembers } from "@/services/MemberService";
 import { useEffect, useState } from "react";
+import { AddMember } from "./AddMember/AddMember";
 import { columns } from "./columns";
 import { DataTable } from "./dataTable";
-
-async function getData(): Promise<Member[]> {
-  // Fetch data from your API here.
-  const members: Member[] = [];
-  for (let i = 0; i < 15; i++) {
-    members.push({
-      id: i,
-      firstName: `First Name ${i}`,
-      lastName: `Last Name ${i}`,
-      gender: "M",
-      birthDate: new Date("2001-11-02"),
-      deathDate: null,
-      father: null,
-      fatherId: null,
-      mother: null,
-      motherId: null,
-      spouse: null,
-      spouseId: null,
-      createdAt: new Date("2021-08-17T00:00:00.000Z"),
-    });
-  }
-  return members;
-}
 
 export const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
 
-  useEffect(() => {
-    getData().then((fetchedMembers) => {
+  const loadMembers = async () => {
+    try {
+      const fetchedMembers = await getMembers();
       setMembers(fetchedMembers);
-    });
+    } catch (error) {
+      console.error("Erreur lors du chargement des membres:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadMembers();
   }, []);
 
   return (
-    <>
-      <LayoutContent>
-        <div className="container w-full">
-          <h1 className="text-3xl font-bold text-foreground py-4">Members</h1>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <DataTable columns={columns} data={members} />
-            </div>
-            <div>
-              <Button variant="default" className="mb-4">
-                Add Member
-              </Button>
-            </div>
+    <LayoutContent>
+      <Container>
+        <h1 className="text-3xl font-bold text-foreground py-4">Membres</h1>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <DataTable columns={columns} data={members} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-foreground pb-4">
+              Ajouter un membre
+            </h2>
+            <AddMember />
           </div>
         </div>
-      </LayoutContent>
-    </>
+      </Container>
+    </LayoutContent>
   );
 };

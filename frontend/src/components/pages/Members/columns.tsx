@@ -14,18 +14,6 @@ import { MoreHorizontal, Trash2 } from "lucide-react";
 
 export const columns: ColumnDef<Member>[] = [
   {
-    id: "selection",
-    cell: ({ row }) => {
-      return (
-        <input
-          type="checkbox"
-          checked={row.getIsSelected()}
-          onChange={() => row.toggleSelected()}
-        />
-      );
-    },
-  },
-  {
     header: "ID",
     accessorKey: "id",
   },
@@ -36,6 +24,9 @@ export const columns: ColumnDef<Member>[] = [
   {
     header: "Last Name",
     accessorKey: "lastName",
+    cell: ({ row }) => {
+      return row.original.lastName.toUpperCase();
+    },
   },
   {
     header: "Gender",
