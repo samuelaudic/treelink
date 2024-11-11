@@ -12,6 +12,9 @@ RUN npm install -g prisma
 # Copier le reste du projet
 COPY . .
 
+# Complier le TS en JS
+RUN npm run build
+
 # Générer le client Prisma
 RUN prisma generate
 

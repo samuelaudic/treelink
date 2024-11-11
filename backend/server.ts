@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-import memberRouter from "./routes/memberRoutes";
+import memberRouter from "./src/routes/memberRoutes";
 app.use("/api/members", memberRouter);
 
 const PORT = process.env.PORT || 3000;

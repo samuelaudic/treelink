@@ -47,12 +47,12 @@ const getMemberById = (id) => __awaiter(void 0, void 0, void 0, function* () {
                 id: true,
                 firstName: true,
                 lastName: true,
-                gender: true,
                 birthDate: true,
                 deathDate: true,
                 fatherId: true,
                 motherId: true,
                 spouseId: true,
+                gender: true,
                 createdAt: true,
             },
         });
