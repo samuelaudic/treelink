@@ -3,7 +3,7 @@ export interface Member {
   firstName: string;
   lastName: string;
   gender: string;
-  birthDate: Date;
+  birthDate: Date | null;
   deathDate: Date | null;
   father: Member | null;
   fatherId: number | null;

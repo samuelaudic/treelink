@@ -1,17 +1,10 @@
-import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
-
-dotenv.config();
+import memberRoutes from "./src/routes/memberRoutes";
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
-
-// Routes
-import memberRouter from "./src/routes/memberRoutes";
-app.use("/api/members", memberRouter);
+app.use("/api/members", memberRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

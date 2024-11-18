@@ -33,7 +33,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMember = exports.updateMember = exports.createMember = exports.getMemberById = exports.getAllMembers = void 0;
+const zod_1 = require("zod");
 const memberService = __importStar(require("../services/memberService"));
+// Schéma de validation avec Zod
+const memberSchema = zod_1.z.object({
+    firstName: zod_1.z.string(),
+    lastName: zod_1.z.string(),
+    gender: zod_1.z.enum(["M", "F"]),
+    birthDate: zod_1.z.date().optional(),
+    deathDate: zod_1.z.date().optional(),
+    fatherId: zod_1.z.number().optional(),
+    motherId: zod_1.z.number().optional(),
+    spouseId: zod_1.z.number().optional(),
+});
 // Récupérer tous les membres
 const getAllMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -50,9 +62,9 @@ const getAllMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 exports.getAllMembers = getAllMembers;
 // Récupérer un membre par son id
 const getMemberById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
     try {
-        const member = yield memberService.getMemberById(Number(id));
+        const id = zod_1.z.string().regex(/^\d+$/).transform(Number).parse(req.params.id);
+        const member = yield memberService.getMemberById(id);
         if (member) {
             res.json(member);
         }
@@ -61,48 +73,48 @@ const getMemberById = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur lors de la récupération du membre" });
+        res.status(400).json({ error: "ID invalide", details: error });
     }
 });
 exports.getMemberById = getMemberById;
 // Créer un nouveau membre
 const createMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const memberData = req.body;
     try {
+        const memberData = memberSchema.parse(req.body);
         const newMember = yield memberService.createMember(memberData);
         res.status(201).json(newMember);
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur lors de la création du membre" });
+        res.status(400).json({ error: "Données invalides", details: error });
     }
 });
 exports.createMember = createMember;
 // Mettre à jour un membre
 const updateMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    const memberData = req.body;
     try {
-        const updatedMember = yield memberService.updateMember(Number(id), memberData);
+        const id = zod_1.z.string().regex(/^\d+$/).transform(Number).parse(req.params.id);
+        const memberData = memberSchema.partial().parse(req.body);
+        const updatedMember = yield memberService.updateMember(id, memberData);
         res.json(updatedMember);
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur lors de la mise à jour du membre" });
+        res
+            .status(400)
+            .json({ error: "Données invalides ou ID incorrect", details: error });
     }
 });
 exports.updateMember = updateMember;
 // Supprimer un membre
 const deleteMember = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
     try {
-        yield memberService.deleteMember(Number(id));
+        const id = zod_1.z.string().regex(/^\d+$/).transform(Number).parse(req.params.id);
+        yield memberService.deleteMember(id);
         res.status(204).send();
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erreur lors de la suppression du membre" });
+        res
+            .status(400)
+            .json({ error: "ID invalide ou suppression impossible", details: error });
     }
 });
 exports.deleteMember = deleteMember;
