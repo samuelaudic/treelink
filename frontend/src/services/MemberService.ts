@@ -24,11 +24,20 @@ const checkResponseStatus = (response: Response) => {
   return response;
 };
 
+// Fonction pour convertir les dates des membres
+const transformMemberDates = (member: Member): Member => ({
+  ...member,
+  birthDate: member.birthDate ? new Date(member.birthDate) : null,
+  deathDate: member.deathDate ? new Date(member.deathDate) : null,
+  createdAt: new Date(member.createdAt),
+});
+
 export const getMembers = async (): Promise<Member[]> => {
   try {
     const response = await fetch(API_URL);
     checkResponseStatus(response);
-    return await response.json();
+    const members: Member[] = await response.json();
+    return members.map(transformMemberDates);
   } catch (error) {
     console.error("Erreur lors de la récupération des membres:", error);
     throw error;
@@ -47,7 +56,8 @@ export const saveMember = async (member: Member): Promise<Member> => {
     });
 
     checkResponseStatus(response);
-    return await response.json();
+    const savedMember: Member = await response.json();
+    return transformMemberDates(savedMember);
   } catch (error) {
     console.error(
       `Erreur lors de l'enregistrement du membre: ${
@@ -76,7 +86,8 @@ export const getMember = async (id: number): Promise<Member> => {
   try {
     const response = await fetch(`${API_URL}/${id}`);
     checkResponseStatus(response);
-    return await response.json();
+    const member: Member = await response.json();
+    return transformMemberDates(member);
   } catch (error) {
     console.error(
       `Erreur lors de la récupération du membre avec ID: ${id}`,
