@@ -2,7 +2,22 @@ import { Member } from "../interfaces/Member";
 
 const API_URL = "http://localhost:3000/api/members";
 
-// Fonction pour vérifier le statut des réponses et personnaliser les messages d'erreur
+const fetchWithTimeout = (
+  url: string,
+  options: RequestInit,
+  timeout = 5000
+): Promise<Response> => {
+  return Promise.race([
+    fetch(url, options),
+    new Promise<Response>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("Timeout dépassé pour la requête")),
+        timeout
+      )
+    ),
+  ]);
+};
+
 const checkResponseStatus = (response: Response) => {
   if (!response.ok) {
     let errorMessage = `Erreur HTTP! Statut : ${response.status}`;
@@ -24,7 +39,6 @@ const checkResponseStatus = (response: Response) => {
   return response;
 };
 
-// Fonction pour convertir les dates des membres
 const transformMemberDates = (member: Member): Member => ({
   ...member,
   birthDate: member.birthDate ? new Date(member.birthDate) : null,
@@ -34,22 +48,24 @@ const transformMemberDates = (member: Member): Member => ({
 
 export const getMembers = async (): Promise<Member[]> => {
   try {
-    const response = await fetch(API_URL);
+    const response = await fetchWithTimeout(API_URL, { method: "GET" });
     checkResponseStatus(response);
     const members: Member[] = await response.json();
     return members.map(transformMemberDates);
   } catch (error) {
-    console.error("Erreur lors de la récupération des membres:", error);
-    throw error;
+    console.error("Erreur lors de la récupération des membres :", error);
+    throw new Error("Impossible de récupérer la liste des membres.");
   }
 };
 
-export const saveMember = async (member: Member): Promise<Member> => {
+export const saveMember = async (
+  member: Partial<Member> & { id?: number }
+): Promise<Member> => {
   try {
     const method = member.id ? "PUT" : "POST";
     const url = member.id ? `${API_URL}/${member.id}` : API_URL;
 
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(member),
@@ -59,32 +75,31 @@ export const saveMember = async (member: Member): Promise<Member> => {
     const savedMember: Member = await response.json();
     return transformMemberDates(savedMember);
   } catch (error) {
-    console.error(
-      `Erreur lors de l'enregistrement du membre: ${
-        member.id || "nouveau membre"
-      }`,
-      error
-    );
-    throw error;
+    console.error("Erreur lors de l'enregistrement :", error);
+    throw new Error("Impossible de sauvegarder le membre.");
   }
 };
 
 export const deleteMember = async (id: number): Promise<void> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const response = await fetchWithTimeout(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
     checkResponseStatus(response);
   } catch (error) {
     console.error(
       `Erreur lors de la suppression du membre avec ID: ${id}`,
       error
     );
-    throw error;
+    throw new Error("Impossible de supprimer le membre.");
   }
 };
 
 export const getMember = async (id: number): Promise<Member> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`);
+    const response = await fetchWithTimeout(`${API_URL}/${id}`, {
+      method: "GET",
+    });
     checkResponseStatus(response);
     const member: Member = await response.json();
     return transformMemberDates(member);
@@ -93,6 +108,6 @@ export const getMember = async (id: number): Promise<Member> => {
       `Erreur lors de la récupération du membre avec ID: ${id}`,
       error
     );
-    throw error;
+    throw new Error("Impossible de récupérer les détails du membre.");
   }
 };

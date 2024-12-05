@@ -15,8 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Member } from "@/interfaces/Member";
+import { getMembers, saveMember } from "@/services/MemberService";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -48,7 +52,21 @@ const formSchema = z.object({
   spouse: z.string().optional(),
 });
 
-export function AddMember() {
+export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
+  const [members, setMembers] = useState<Member[]>([]);
+  const loadMembers = async () => {
+    try {
+      const fetchedMembers = await getMembers();
+      setMembers(fetchedMembers);
+    } catch (error) {
+      console.error("Erreur lors du chargement des membres:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadMembers();
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,15 +81,49 @@ export function AddMember() {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-  };
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      const transformedData: Member = {
+        id: 0,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        gender: data.gender || "M",
+        birthDate: data.birthDate ? new Date(data.birthDate) : null,
+        deathDate: data.deathDate ? new Date(data.deathDate) : null,
+        father: data.father
+          ? members.find((member) => member.id === parseInt(data.father!)) ||
+            null
+          : null,
+        fatherId: data.father ? parseInt(data.father) : null,
+        mother: data.mother
+          ? members.find((member) => member.id === parseInt(data.mother!)) ||
+            null
+          : null,
+        motherId: data.mother ? parseInt(data.mother) : null,
+        spouse: data.spouse
+          ? members.find((member) => member.id === parseInt(data.spouse!)) ||
+            null
+          : null,
+        spouseId: data.spouse ? parseInt(data.spouse) : null,
+        createdAt: new Date(),
+      };
 
-  const members = [
-    { id: 1, firstName: "Jean", lastName: "Dupont" },
-    { id: 2, firstName: "Marie", lastName: "Durand" },
-    { id: 3, firstName: "Pierre", lastName: "Martin" },
-  ];
+      console.log("Submitting:", transformedData);
+
+      const savedMember = await saveMember(transformedData);
+
+      refreshMembers();
+
+      form.reset();
+
+      toast.success("Membre enregistré avec succès.");
+
+      console.log("Saved member:", savedMember);
+    } catch (error) {
+      console.error("Erreur lors de l'enregistrement du membre:", error);
+      toast.error("Erreur lors de l'enregistrement du membre.");
+    }
+  };
 
   return (
     <Form {...form}>
@@ -179,14 +231,24 @@ export function AddMember() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {members.map((member) => (
-                        <SelectItem
-                          key={member.id}
-                          value={member.id.toString()}
-                        >
-                          {member.firstName} {member.lastName.toUpperCase()}
-                        </SelectItem>
-                      ))}
+                      {members
+                        .filter((member) => {
+                          const currentBirthDate = new Date(
+                            form.getValues("birthDate") || "1970-01-01"
+                          );
+                          const memberBirthDate = new Date(
+                            member.birthDate?.toDateString() || "1970-01-01"
+                          );
+                          return memberBirthDate < currentBirthDate; // Plus âgé
+                        })
+                        .map((member) => (
+                          <SelectItem
+                            key={member.id}
+                            value={member.id.toString()}
+                          >
+                            {member.firstName} {member.lastName.toUpperCase()}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
