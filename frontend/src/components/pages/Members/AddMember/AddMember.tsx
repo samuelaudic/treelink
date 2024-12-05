@@ -20,6 +20,7 @@ import { getMembers, saveMember } from "@/services/MemberService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -51,7 +52,7 @@ const formSchema = z.object({
   spouse: z.string().optional(),
 });
 
-export function AddMember() {
+export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
   const [members, setMembers] = useState<Member[]>([]);
   const loadMembers = async () => {
     try {
@@ -83,7 +84,7 @@ export function AddMember() {
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const transformedData: Member = {
-        id: 0, // Pour les nouveaux membres
+        id: 0,
         firstName: data.firstName,
         lastName: data.lastName,
         gender: data.gender || "M",
@@ -111,9 +112,16 @@ export function AddMember() {
 
       const savedMember = await saveMember(transformedData);
 
+      refreshMembers();
+
+      form.reset();
+
+      toast.success("Membre enregistré avec succès.");
+
       console.log("Saved member:", savedMember);
     } catch (error) {
       console.error("Erreur lors de l'enregistrement du membre:", error);
+      toast.error("Erreur lors de l'enregistrement du membre.");
     }
   };
 

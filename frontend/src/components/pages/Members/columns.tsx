@@ -12,7 +12,9 @@ import { Member } from "@/interfaces/Member";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 
-export const columns: ColumnDef<Member>[] = [
+export const getColumns = (
+  handleDeleteMember: (id: number) => void
+): ColumnDef<Member>[] => [
   {
     header: "ID",
     accessorKey: "id",
@@ -68,7 +70,7 @@ export const columns: ColumnDef<Member>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const test = row.original;
+      const member = row.original;
 
       return (
         <DropdownMenu>
@@ -81,7 +83,15 @@ export const columns: ColumnDef<Member>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(test.id.toString())}
+              onClick={async () => {
+                if (
+                  window.confirm(
+                    "Êtes-vous sûr de vouloir supprimer ce membre ?"
+                  )
+                ) {
+                  await handleDeleteMember(member.id); // Appelle la suppression
+                }
+              }}
               className="flex items-center gap-2"
             >
               <Trash2 />

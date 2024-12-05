@@ -3,14 +3,24 @@ import { z } from "zod";
 import * as memberService from "../services/memberService";
 
 const memberSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+  firstName: z
+    .string()
+    .min(2, { message: "Le prénom doit avoir au moins 2 caractères" }),
+  lastName: z
+    .string()
+    .min(2, { message: "Le nom doit avoir au moins 2 caractères" }),
   gender: z.enum(["M", "F"]),
-  birthDate: z.date().optional(),
-  deathDate: z.date().optional(),
-  fatherId: z.number().optional(),
-  motherId: z.number().optional(),
-  spouseId: z.number().optional(),
+  birthDate: z.string().optional().nullable(),
+  deathDate: z.string().optional().nullable(),
+  fatherId: z.number().optional().nullable(),
+  motherId: z.number().optional().nullable(),
+  spouseId: z.number().optional().nullable(),
+});
+
+const transformMemberData = (data: z.infer<typeof memberSchema>) => ({
+  ...data,
+  birthDate: data.birthDate ? new Date(data.birthDate) : null,
+  deathDate: data.deathDate ? new Date(data.deathDate) : null,
 });
 
 // Récupérer tous les membres
