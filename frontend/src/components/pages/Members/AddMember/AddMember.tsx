@@ -32,21 +32,7 @@ const formSchema = z.object({
     .min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
   gender: z.string().optional(),
   birthDate: z.string().optional(),
-  deathDate: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (value) {
-          return new Date(value) > new Date();
-        }
-        return true;
-      },
-      {
-        message:
-          "La date de décès doit être postérieure à la date de naissance.",
-      }
-    ),
+  deathDate: z.string().optional(),
   father: z.string().optional(),
   mother: z.string().optional(),
   spouse: z.string().optional(),
@@ -105,6 +91,7 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
             null
           : null,
         spouseId: data.spouse ? parseInt(data.spouse) : null,
+        children: [],
         createdAt: new Date(),
       };
 
@@ -233,13 +220,10 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
                     <SelectContent>
                       {members
                         .filter((member) => {
-                          const currentBirthDate = new Date(
-                            form.getValues("birthDate") || "1970-01-01"
-                          );
                           const memberBirthDate = new Date(
                             member.birthDate?.toDateString() || "1970-01-01"
                           );
-                          return memberBirthDate < currentBirthDate; // Plus âgé
+                          return memberBirthDate;
                         })
                         .map((member) => (
                           <SelectItem

@@ -104,7 +104,7 @@ export const getColumns = (
                     "Êtes-vous sûr de vouloir supprimer ce membre ?"
                   )
                 ) {
-                  await handleDeleteMember(member.id); // Appelle la suppression
+                  await handleDeleteMember(member.id);
                 }
               }}
               className="flex items-center gap-2"

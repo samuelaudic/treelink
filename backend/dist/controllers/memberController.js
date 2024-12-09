@@ -35,17 +35,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMember = exports.updateMember = exports.createMember = exports.getMemberById = exports.getAllMembers = void 0;
 const zod_1 = require("zod");
 const memberService = __importStar(require("../services/memberService"));
-// Schéma de validation avec Zod
 const memberSchema = zod_1.z.object({
-    firstName: zod_1.z.string(),
-    lastName: zod_1.z.string(),
+    firstName: zod_1.z
+        .string()
+        .min(2, { message: "Le prénom doit avoir au moins 2 caractères" }),
+    lastName: zod_1.z
+        .string()
+        .min(2, { message: "Le nom doit avoir au moins 2 caractères" }),
     gender: zod_1.z.enum(["M", "F"]),
-    birthDate: zod_1.z.date().optional(),
-    deathDate: zod_1.z.date().optional(),
-    fatherId: zod_1.z.number().optional(),
-    motherId: zod_1.z.number().optional(),
-    spouseId: zod_1.z.number().optional(),
+    birthDate: zod_1.z.string().optional().nullable(),
+    deathDate: zod_1.z.string().optional().nullable(),
+    fatherId: zod_1.z.number().optional().nullable(),
+    motherId: zod_1.z.number().optional().nullable(),
+    spouseId: zod_1.z.number().optional().nullable(),
 });
+const transformMemberData = (data) => (Object.assign(Object.assign({}, data), { birthDate: data.birthDate ? new Date(data.birthDate) : null, deathDate: data.deathDate ? new Date(data.deathDate) : null }));
 // Récupérer tous les membres
 const getAllMembers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
