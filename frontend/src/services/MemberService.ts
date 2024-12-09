@@ -46,12 +46,50 @@ const transformMemberDates = (member: Member): Member => ({
   createdAt: new Date(member.createdAt),
 });
 
+const getMemberById = async (id: number): Promise<Member | null> => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/${id}`, {
+      method: "GET",
+    });
+    checkResponseStatus(response);
+    const member: Member = await response.json();
+    return transformMemberDates(member);
+  } catch (error) {
+    console.error(
+      `Erreur lors de la récupération du membre avec ID: ${id}`,
+      error
+    );
+    return null;
+  }
+};
+
 export const getMembers = async (): Promise<Member[]> => {
   try {
     const response = await fetchWithTimeout(API_URL, { method: "GET" });
     checkResponseStatus(response);
     const members: Member[] = await response.json();
-    return members.map(transformMemberDates);
+
+    const membersWithFamilyInfo = await Promise.all(
+      members.map(async (member) => {
+        const updatedMember = await transformMemberDates(member);
+
+        if (updatedMember.fatherId) {
+          updatedMember.father = await getMemberById(updatedMember.fatherId);
+        }
+
+        if (updatedMember.motherId) {
+          updatedMember.mother = await getMemberById(updatedMember.motherId);
+        }
+
+        if (updatedMember.spouseId) {
+          updatedMember.spouse = await getMemberById(updatedMember.spouseId);
+        }
+
+        return updatedMember;
+      })
+    );
+
+    return membersWithFamilyInfo;
   } catch (error) {
     console.error("Erreur lors de la récupération des membres :", error);
     throw new Error("Impossible de récupérer la liste des membres.");
@@ -92,22 +130,5 @@ export const deleteMember = async (id: number): Promise<void> => {
       error
     );
     throw new Error("Impossible de supprimer le membre.");
-  }
-};
-
-export const getMember = async (id: number): Promise<Member> => {
-  try {
-    const response = await fetchWithTimeout(`${API_URL}/${id}`, {
-      method: "GET",
-    });
-    checkResponseStatus(response);
-    const member: Member = await response.json();
-    return transformMemberDates(member);
-  } catch (error) {
-    console.error(
-      `Erreur lors de la récupération du membre avec ID: ${id}`,
-      error
-    );
-    throw new Error("Impossible de récupérer les détails du membre.");
   }
 };

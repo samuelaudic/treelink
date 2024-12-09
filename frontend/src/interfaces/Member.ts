@@ -11,5 +11,6 @@ export interface Member {
   motherId: number | null;
   spouse: Member | null;
   spouseId: number | null;
+  children: Member[] | null;
   createdAt: Date;
 }
