@@ -51,14 +51,29 @@ export const getColumns = (
   {
     header: "Father",
     accessorKey: "father",
+    cell: ({ row }) => {
+      return row.original.father
+        ? `${row.original.father.firstName} ${row.original.father.lastName}`
+        : "N/A";
+    },
   },
   {
     header: "Mother",
     accessorKey: "mother",
+    cell: ({ row }) => {
+      return row.original.mother
+        ? `${row.original.mother.firstName} ${row.original.mother.lastName}`
+        : "N/A";
+    },
   },
   {
     header: "Spouse",
     accessorKey: "spouse",
+    cell: ({ row }) => {
+      return row.original.spouse
+        ? `${row.original.spouse.firstName} ${row.original.spouse.lastName}`
+        : "N/A";
+    },
   },
   {
     header: "Created At",
