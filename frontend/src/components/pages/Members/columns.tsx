@@ -13,7 +13,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 export const getColumns = (
-  handleDeleteMember: (id: number) => void
+  handleDeleteMember: (id: number) => void,
+  handleEditMember: (id: number) => void
 ): ColumnDef<Member>[] => [
   {
     header: "ID",
@@ -98,7 +99,7 @@ export const getColumns = (
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => alert("Edit")}
+              onClick={async () => handleEditMember(member.id)}
               className="flex items-center gap-2"
             >
               <Pencil />

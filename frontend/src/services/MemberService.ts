@@ -132,3 +132,20 @@ export const deleteMember = async (id: number): Promise<void> => {
     throw new Error("Impossible de supprimer le membre.");
   }
 };
+
+export const updateMember = async (member: Member): Promise<Member> => {
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/${member.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(member),
+    });
+
+    checkResponseStatus(response);
+    const updatedMember: Member = await response.json();
+    return transformMemberDates(updatedMember);
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour :", error);
+    throw new Error("Impossible de mettre à jour le membre.");
+  }
+};
