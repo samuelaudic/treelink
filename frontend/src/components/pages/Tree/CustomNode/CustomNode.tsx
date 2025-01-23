@@ -35,7 +35,6 @@ interface CustomNodeProps {
 }
 
 export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
-  console.log(data);
   return (
     <Sheet>
       <SheetTrigger asChild>

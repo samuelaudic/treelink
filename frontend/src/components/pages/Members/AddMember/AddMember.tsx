@@ -15,12 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { Member } from "@/interfaces/Member";
 import { getMembers, saveMember } from "@/services/MemberService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -39,6 +39,7 @@ const formSchema = z.object({
 });
 
 export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
+  const { toast } = useToast();
   const [members, setMembers] = useState<Member[]>([]);
   const loadMembers = async () => {
     try {
@@ -95,20 +96,22 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
         createdAt: new Date(),
       };
 
-      console.log("Submitting:", transformedData);
-
-      const savedMember = await saveMember(transformedData);
+      await saveMember(transformedData);
 
       refreshMembers();
 
       form.reset();
 
-      toast.success("Membre enregistré avec succès.");
-
-      console.log("Saved member:", savedMember);
+      toast({
+        title: "Membre enregistré avec succès !",
+        type: "foreground",
+      });
     } catch (error) {
-      console.error("Erreur lors de l'enregistrement du membre:", error);
-      toast.error("Erreur lors de l'enregistrement du membre.");
+      toast({
+        title: "Erreur lors de l'enregistrement du membre.",
+        type: "foreground",
+        variant: "destructive",
+      });
     }
   };
 

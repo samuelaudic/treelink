@@ -3,10 +3,10 @@ import { LayoutContent } from "@/components/layout/LayoutContent/LayoutContent";
 import { Member } from "@/interfaces/Member";
 import { deleteMember, getMembers } from "@/services/MemberService";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { AddMember } from "./AddMember/AddMember";
 import { getColumns } from "./columns";
 import { DataTable } from "./dataTable";
+import { useToast } from "@/hooks/use-toast";
 
 export const Spinner = () => {
   return (
@@ -19,6 +19,7 @@ export const Spinner = () => {
 export const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const loadMembers = async () => {
     setIsLoading(true);
@@ -51,10 +52,16 @@ export const Members = () => {
       setMembers((prevMembers) =>
         prevMembers.filter((member) => member.id !== id)
       );
-      toast.success("Membre supprimé avec succès !");
+      toast({
+        title: "Membre enregistré avec succès !",
+        type: "foreground",
+      });
     } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-      toast.error("Impossible de supprimer le membre.");
+      toast({
+        title: "Erreur lors de l'enregistrement du membre.",
+        type: "foreground",
+        variant: "destructive",
+      });
     }
   };
 
