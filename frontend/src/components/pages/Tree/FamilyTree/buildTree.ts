@@ -22,6 +22,7 @@ function buildTree(
 
   const layoutedNodes = nodes.map((node) => {
     const position = dagreGraph.node(node.id);
+
     return { ...node, position: { x: position.x, y: position.y } };
   });
 

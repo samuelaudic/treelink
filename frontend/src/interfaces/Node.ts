@@ -12,15 +12,15 @@ interface Node {
     father: {
       firstName: string;
       lastName: string;
-    };
+    } | null;
     mother: {
       firstName: string;
       lastName: string;
-    };
+    } | null;
     spouse: {
       firstName: string;
       lastName: string;
-    };
+    } | null;
   };
   position: { x: number; y: number };
 }

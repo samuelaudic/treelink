@@ -15,12 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { Member } from "@/interfaces/Member";
-import { getMembers, saveMember } from "@/services/MemberService";
+import { getMembers, saveMember, updateMember } from "@/services/MemberService";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { on } from "events";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -38,8 +39,18 @@ const formSchema = z.object({
   spouse: z.string().optional(),
 });
 
-export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
+export function FormMember({
+  refreshMembers,
+  memberToEdit,
+  onEditComplete,
+}: {
+  refreshMembers: () => void;
+  memberToEdit?: Member | null;
+  onEditComplete?: () => void;
+}) {
+  const { toast } = useToast();
   const [members, setMembers] = useState<Member[]>([]);
+
   const loadMembers = async () => {
     try {
       const fetchedMembers = await getMembers();
@@ -56,21 +67,53 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      gender: "M",
-      birthDate: "",
-      deathDate: "",
-      father: "",
-      mother: "",
-      spouse: "",
+      firstName: memberToEdit?.firstName || "",
+      lastName: memberToEdit?.lastName || "",
+      gender: memberToEdit?.gender || "M",
+      birthDate: memberToEdit?.birthDate?.toISOString().split("T")[0] || "",
+      deathDate: memberToEdit?.deathDate?.toISOString().split("T")[0] || "",
+      father: memberToEdit?.fatherId?.toString() || "",
+      mother: memberToEdit?.motherId?.toString() || "",
+      spouse: memberToEdit?.spouseId?.toString() || "",
     },
   });
+
+  const { reset } = form;
+
+  useEffect(() => {
+    if (memberToEdit) {
+      reset({
+        firstName: memberToEdit.firstName || "",
+        lastName: memberToEdit.lastName || "",
+        gender: memberToEdit.gender || "M",
+        birthDate: memberToEdit.birthDate
+          ? memberToEdit.birthDate.toISOString().split("T")[0]
+          : "",
+        deathDate: memberToEdit.deathDate
+          ? memberToEdit.deathDate.toISOString().split("T")[0]
+          : "",
+        father: memberToEdit.fatherId?.toString() || "",
+        mother: memberToEdit.motherId?.toString() || "",
+        spouse: memberToEdit.spouseId?.toString() || "",
+      });
+    } else {
+      reset({
+        firstName: "",
+        lastName: "",
+        gender: "M",
+        birthDate: "",
+        deathDate: "",
+        father: "",
+        mother: "",
+        spouse: "",
+      });
+    }
+  }, [memberToEdit, reset]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const transformedData: Member = {
-        id: 0,
+        id: memberToEdit?.id || 0,
         firstName: data.firstName,
         lastName: data.lastName,
         gender: data.gender || "M",
@@ -91,25 +134,41 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
             null
           : null,
         spouseId: data.spouse ? parseInt(data.spouse) : null,
-        children: [],
-        createdAt: new Date(),
+        children: memberToEdit?.children || [],
+        createdAt: memberToEdit?.createdAt || new Date(),
       };
 
-      console.log("Submitting:", transformedData);
-
-      const savedMember = await saveMember(transformedData);
+      if (memberToEdit) {
+        // Update member
+        await updateMember(transformedData);
+        toast({
+          title: "Membre mis à jour avec succès !",
+          type: "foreground",
+        });
+        onEditComplete && onEditComplete(); // Callback if provided
+      } else {
+        // Create member
+        await saveMember(transformedData);
+        toast({
+          title: "Membre créé avec succès !",
+          type: "foreground",
+        });
+      }
 
       refreshMembers();
-
       form.reset();
-
-      toast.success("Membre enregistré avec succès.");
-
-      console.log("Saved member:", savedMember);
     } catch (error) {
-      console.error("Erreur lors de l'enregistrement du membre:", error);
-      toast.error("Erreur lors de l'enregistrement du membre.");
+      toast({
+        title: "Erreur lors de l'enregistrement du membre.",
+        type: "foreground",
+        variant: "destructive",
+      });
     }
+  };
+
+  const handleCancel = () => {
+    onEditComplete && onEditComplete();
+    form.reset();
   };
 
   return (
@@ -218,21 +277,14 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {members
-                        .filter((member) => {
-                          const memberBirthDate = new Date(
-                            member.birthDate?.toDateString() || "1970-01-01"
-                          );
-                          return memberBirthDate;
-                        })
-                        .map((member) => (
-                          <SelectItem
-                            key={member.id}
-                            value={member.id.toString()}
-                          >
-                            {member.firstName} {member.lastName.toUpperCase()}
-                          </SelectItem>
-                        ))}
+                      {members.map((member) => (
+                        <SelectItem
+                          key={member.id}
+                          value={member.id.toString()}
+                        >
+                          {member.firstName} {member.lastName.toUpperCase()}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -241,7 +293,16 @@ export function AddMember({ refreshMembers }: { refreshMembers: () => void }) {
             />
           ))}
         </div>
-        <Button type="submit">Soumettre</Button>
+        <div className="flex gap-4">
+          <Button type="submit">
+            {memberToEdit ? "Mettre à jour" : "Créer"}
+          </Button>
+          {memberToEdit && (
+            <Button type="button" variant="secondary" onClick={handleCancel}>
+              Annuler
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );

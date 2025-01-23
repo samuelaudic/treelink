@@ -1,3 +1,4 @@
+import Container from "@/components/layout/Container/Container";
 import { TitleLabel } from "@/components/text/TitleLabel";
 import {
   Card,
@@ -6,7 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Container } from "lucide-react";
 import { Handle, Position } from "reactflow";
 
 interface CustomNodeData {
@@ -35,7 +35,6 @@ interface CustomNodeProps {
 }
 
 export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
-  console.log(data);
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -50,7 +49,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
           }}
         >
           <Handle
-            type="source"
+            type="target"
             position={Position.Top}
             style={{ background: "#fff" }}
           />
@@ -95,9 +94,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Date de naissance"
                   titleSize="lg"
                   description={
-                    data.birthDate
-                      ? new Date(data.birthDate).toLocaleDateString()
-                      : "N/A"
+                    data.birthDate ? data.birthDate.toString() : "N/A"
                   }
                 />
                 {data.deathDate && (
@@ -105,9 +102,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                     title="Date de décès"
                     titleSize="lg"
                     description={
-                      data.deathDate
-                        ? new Date(data.deathDate).toLocaleDateString()
-                        : "N/A"
+                      data.deathDate ? data.deathDate.toString() : "N/A"
                     }
                   />
                 )}
@@ -115,7 +110,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Père"
                   titleSize="lg"
                   description={
-                    data.father
+                    data.father && data.father.firstName != "N/A"
                       ? `${data.father.firstName} ${data.father.lastName}`
                       : "N/A"
                   }
@@ -124,7 +119,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Mère"
                   titleSize="lg"
                   description={
-                    data.mother
+                    data.mother && data.mother.firstName != "N/A"
                       ? `${data.mother.firstName} ${data.mother.lastName}`
                       : "N/A"
                   }
@@ -133,7 +128,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Conjoint"
                   titleSize="lg"
                   description={
-                    data.spouse
+                    data.spouse && data.spouse.firstName != "N/A"
                       ? `${data.spouse.firstName} ${data.spouse.lastName}`
                       : "N/A"
                   }

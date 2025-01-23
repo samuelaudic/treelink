@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Member } from "@/interfaces/Member";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 export const getColumns = (
-  handleDeleteMember: (id: number) => void
+  handleDeleteMember: (id: number) => void,
+  handleEditMember: (id: number) => void
 ): ColumnDef<Member>[] => [
   {
     header: "ID",
@@ -97,6 +98,13 @@ export const getColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={async () => handleEditMember(member.id)}
+              className="flex items-center gap-2"
+            >
+              <Pencil />
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={async () => {
                 if (
