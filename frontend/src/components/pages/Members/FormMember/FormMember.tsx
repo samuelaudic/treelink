@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Member } from "@/interfaces/Member";
 import { getMembers, saveMember, updateMember } from "@/services/MemberService";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { on } from "events";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -77,6 +78,38 @@ export function FormMember({
     },
   });
 
+  const { reset } = form;
+
+  useEffect(() => {
+    if (memberToEdit) {
+      reset({
+        firstName: memberToEdit.firstName || "",
+        lastName: memberToEdit.lastName || "",
+        gender: memberToEdit.gender || "M",
+        birthDate: memberToEdit.birthDate
+          ? memberToEdit.birthDate.toISOString().split("T")[0]
+          : "",
+        deathDate: memberToEdit.deathDate
+          ? memberToEdit.deathDate.toISOString().split("T")[0]
+          : "",
+        father: memberToEdit.fatherId?.toString() || "",
+        mother: memberToEdit.motherId?.toString() || "",
+        spouse: memberToEdit.spouseId?.toString() || "",
+      });
+    } else {
+      reset({
+        firstName: "",
+        lastName: "",
+        gender: "M",
+        birthDate: "",
+        deathDate: "",
+        father: "",
+        mother: "",
+        spouse: "",
+      });
+    }
+  }, [memberToEdit, reset]);
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const transformedData: Member = {
@@ -131,6 +164,11 @@ export function FormMember({
         variant: "destructive",
       });
     }
+  };
+
+  const handleCancel = () => {
+    onEditComplete && onEditComplete();
+    form.reset();
   };
 
   return (
@@ -255,9 +293,16 @@ export function FormMember({
             />
           ))}
         </div>
-        <Button type="submit">
-          {memberToEdit ? "Mettre à jour" : "Créer"}
-        </Button>
+        <div className="flex gap-4">
+          <Button type="submit">
+            {memberToEdit ? "Mettre à jour" : "Créer"}
+          </Button>
+          {memberToEdit && (
+            <Button type="button" variant="secondary" onClick={handleCancel}>
+              Annuler
+            </Button>
+          )}
+        </div>
       </form>
     </Form>
   );
