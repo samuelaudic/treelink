@@ -77,15 +77,15 @@ export const Members = () => {
     <LayoutContent>
       <Container>
         <h1 className="text-3xl font-bold text-foreground py-4">Membres</h1>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-2">
             {isLoading ? (
               <Spinner />
             ) : (
               <DataTable columns={columns} data={members} />
             )}
           </div>
-          <div>
+          <div className="col-span-1">
             <h2 className="text-2xl font-bold text-foreground pb-4">
               Ajouter un membre
             </h2>
