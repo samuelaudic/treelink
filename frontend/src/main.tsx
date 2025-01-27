@@ -1,14 +1,9 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 import "./index.css";
-import { Toaster } from "./components/ui/toaster.tsx";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <main className="absolute top-0">
-      <App />
-    </main>
-    <Toaster />
-  </StrictMode>
-);
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Failed to find the root element");
+
+const root = ReactDOM.createRoot(rootElement);
+root.render(<App />);

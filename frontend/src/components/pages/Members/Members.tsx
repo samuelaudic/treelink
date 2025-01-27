@@ -1,5 +1,4 @@
 import Container from "@/components/layout/Container/Container";
-import { LayoutContent } from "@/components/layout/LayoutContent/LayoutContent";
 import { Member } from "@/interfaces/Member";
 import { deleteMember, getMembers } from "@/services/MemberService";
 import { useEffect, useState } from "react";
@@ -16,7 +15,7 @@ export const Spinner = () => {
   );
 };
 
-export const Members = () => {
+export default function Members() {
   const [members, setMembers] = useState<Member[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
@@ -74,29 +73,27 @@ export const Members = () => {
   const columns = getColumns(handleDeleteMember, handleEditMember);
 
   return (
-    <LayoutContent>
-      <Container>
-        <h1 className="text-3xl font-bold text-foreground py-4">Membres</h1>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2">
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <DataTable columns={columns} data={members} />
-            )}
-          </div>
-          <div className="col-span-1">
-            <h2 className="text-2xl font-bold text-foreground pb-4">
-              Ajouter un membre
-            </h2>
-            <FormMember
-              refreshMembers={refreshMembers}
-              memberToEdit={memberToEdit}
-              onEditComplete={() => setMemberToEdit(null)}
-            />
-          </div>
+    <Container>
+      <h1 className="text-3xl font-bold text-foreground py-4">Membres</h1>
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2">
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <DataTable columns={columns} data={members} />
+          )}
         </div>
-      </Container>
-    </LayoutContent>
+        <div className="col-span-1">
+          <h2 className="text-2xl font-bold text-foreground pb-4">
+            Ajouter un membre
+          </h2>
+          <FormMember
+            refreshMembers={refreshMembers}
+            memberToEdit={memberToEdit}
+            onEditComplete={() => setMemberToEdit(null)}
+          />
+        </div>
+      </div>
+    </Container>
   );
-};
+}

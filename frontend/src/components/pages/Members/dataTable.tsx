@@ -43,7 +43,7 @@ export function DataTable<TData>({ columns, data }: DataTableProps<TData>) {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center space-x-2 mb-4">
         <Input
           placeholder="Search..."
           value={globalFilter}
