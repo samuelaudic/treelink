@@ -1,9 +1,8 @@
 import { ThemeToggle } from "../ThemeToggle/ThemeToggle";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { useLocation } from "react-router-dom";
-import { items } from "../AppSidebar/AppSidebar";
+import { items } from "./items";
 import { Fragment } from "react/jsx-runtime";
 import {
   Breadcrumb,
@@ -12,6 +11,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { TreeDeciduous } from "lucide-react";
 
 export function Header() {
   const location = useLocation();
@@ -61,12 +61,23 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 right-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-background",
-        "transition-[margin] duration-200 ease-linear"
+        "sticky top-0 right-0 z-40 flex h-16 shrink-0 items-center gap-4 border-b px-4 bg-background"
       )}
     >
-      <SidebarTrigger />
-      <Separator orientation="vertical" className="mr-2 h-4" />
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <TreeDeciduous />
+          <a href="/" className="text-foreground font-semibold">
+            <h1 className="text-lg font-semibold hover:text-foreground hover:cursor-default">
+              TreeLink
+            </h1>
+          </a>
+        </div>
+        <Separator
+          orientation="vertical"
+          className="flex justify-center items-center h-4"
+        />
+      </div>
       <div className="flex items-center justify-between w-full">
         <Breadcrumb>
           <BreadcrumbList>
@@ -120,7 +131,27 @@ export function Header() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
+            {items && items.length > 0
+              ? items.map((item) => (
+                  <a
+                    key={item.url}
+                    href={item.url}
+                    className={cn(
+                      "flex items-center gap-2 duration-75 text-sm",
+                      pathname === item.url &&
+                        "text-foreground hover:text-foreground font-medium hover:cursor-default",
+                      pathname !== item.url &&
+                        "text-popover-foreground font-normal"
+                    )}
+                  >
+                    {item.icon && <item.icon className="h-4 w-4" />}
+                    <span>{item.title}</span>
+                  </a>
+                ))
+              : null}
+          </div>
           <ThemeToggle />
         </div>
       </div>
