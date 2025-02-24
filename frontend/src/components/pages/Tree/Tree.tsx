@@ -1,20 +1,21 @@
 import Container from "@/components/layout/Container/Container";
 import FamilyTree from "./FamilyTree/FamilyTree";
-import { getMembers } from "@/services/MemberService";
-import { useEffect, useState } from "react";
-import { Member } from "@/interfaces/Member";
+import { useMembers } from "@/hooks/useMembers";
 
 export default function Tree() {
-  const [members, setMembers] = useState<Member[]>([]);
+  const { data: members, isLoading, error } = useMembers();
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      const fetchedMembers = await getMembers();
-      setMembers(fetchedMembers);
-    };
+  if (isLoading) {
+    return <p>Chargement...</p>;
+  }
 
-    fetchMembers();
-  }, []);
+  if (error) {
+    return <p>Une erreur est survenue lors du chargement des membres.</p>;
+  }
+
+  if (!members) {
+    return <p>Aucun membre trouvé.</p>;
+  }
 
   return (
     <>
