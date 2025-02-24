@@ -1,13 +1,13 @@
-import Container from "@/components/layout/Container/Container";
-import { TitleLabel } from "@/components/text/TitleLabel";
+import { Handle, Position } from "reactflow";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Handle, Position } from "reactflow";
+import Container from "@/components/layout/Container/Container";
+import { TitleLabel } from "@/components/text/TitleLabel";
 
 interface CustomNodeData {
   label: string;
@@ -16,18 +16,9 @@ interface CustomNodeData {
   birthDate: Date | null;
   deathDate: Date | null;
   gender: string;
-  father?: {
-    firstName: string;
-    lastName: string;
-  };
-  mother?: {
-    firstName: string;
-    lastName: string;
-  };
-  spouse?: {
-    firstName: string;
-    lastName: string;
-  };
+  father?: { firstName: string; lastName: string };
+  mother?: { firstName: string; lastName: string };
+  spouse?: { firstName: string; lastName: string };
 }
 
 interface CustomNodeProps {
@@ -46,23 +37,36 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
             backgroundColor: "#000",
             textAlign: "center",
             width: "150px",
+            position: "relative",
           }}
         >
           <Handle
             type="target"
             position={Position.Top}
             style={{ background: "#fff" }}
+            id="parents"
           />
           <div>
-            <strong>{data.label}</strong>
+            <strong>{data.firstName + " " + data.lastName}</strong>
           </div>
           <Handle
             type="source"
             position={Position.Bottom}
             style={{ background: "#fff" }}
+            id="children"
           />
+
+          {data.spouse && (
+            <Handle
+              type="source"
+              position={data.gender == "M" ? Position.Right : Position.Left}
+              style={{ background: "#fff" }}
+              id="spouse"
+            />
+          )}
         </div>
       </SheetTrigger>
+
       <SheetContent>
         <Card>
           <CardHeader>
@@ -101,16 +105,14 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   <TitleLabel
                     title="Date de décès"
                     titleSize="lg"
-                    description={
-                      data.deathDate ? data.deathDate.toString() : "N/A"
-                    }
+                    description={data.deathDate.toString()}
                   />
                 )}
                 <TitleLabel
                   title="Père"
                   titleSize="lg"
                   description={
-                    data.father && data.father.firstName != "N/A"
+                    data.father
                       ? `${data.father.firstName} ${data.father.lastName}`
                       : "N/A"
                   }
@@ -119,7 +121,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Mère"
                   titleSize="lg"
                   description={
-                    data.mother && data.mother.firstName != "N/A"
+                    data.mother
                       ? `${data.mother.firstName} ${data.mother.lastName}`
                       : "N/A"
                   }
@@ -128,7 +130,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
                   title="Conjoint"
                   titleSize="lg"
                   description={
-                    data.spouse && data.spouse.firstName != "N/A"
+                    data.spouse
                       ? `${data.spouse.firstName} ${data.spouse.lastName}`
                       : "N/A"
                   }
