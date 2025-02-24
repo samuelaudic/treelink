@@ -11,6 +11,9 @@ import { Toaster } from "./components/ui/toaster";
 import Home from "./components/pages/Home/Home";
 import Members from "./components/pages/Members/Members";
 import Tree from "./components/pages/Tree/Tree";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const Layout = () => {
   return (
@@ -25,18 +28,20 @@ const Layout = () => {
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Toaster />
-      <Router>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/tree" element={<Tree />} />
-          </Route>
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Toaster />
+        <Router>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/members" element={<Members />} />
+              <Route path="/tree" element={<Tree />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 };
 

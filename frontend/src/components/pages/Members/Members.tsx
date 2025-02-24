@@ -1,73 +1,46 @@
 import Container from "@/components/layout/Container/Container";
 import { Member } from "@/interfaces/Member";
-import { deleteMember, getMembers } from "@/services/MemberService";
-import { useEffect, useState } from "react";
+import { useMembers, useDeleteMember } from "@/hooks/useMembers";
 import { FormMember } from "./FormMember/FormMember";
 import { getColumns } from "./columns";
 import { DataTable } from "./dataTable";
 import { useToast } from "@/hooks/use-toast";
-
-export const Spinner = () => {
-  return (
-    <div className="flex justify-center items-center">
-      <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
-};
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Members() {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
   const { toast } = useToast();
 
-  const handleEditMember = async (id: number) => {
+  const { data: members = [], isLoading, refetch } = useMembers();
+
+  const deleteMemberMutation = useDeleteMember();
+
+  const handleEditMember = (id: number) => {
     const member = members.find((m) => m.id === id) || null;
     setMemberToEdit(member);
   };
 
-  const loadMembers = async () => {
-    setIsLoading(true);
-    try {
-      const fetchedMembers = await getMembers();
-      setMembers(fetchedMembers);
-    } catch (error) {
-      console.error("Erreur lors du chargement des membres:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const refreshMembers = () => {
+    refetch();
   };
 
-  useEffect(() => {
-    loadMembers();
-  }, []);
-
-  const refreshMembers = async () => {
-    try {
-      const fetchedMembers = await getMembers();
-      setMembers(fetchedMembers);
-    } catch (error) {
-      console.error("Erreur lors du rafraîchissement des membres:", error);
-    }
-  };
-
-  const handleDeleteMember = async (id: number) => {
-    try {
-      await deleteMember(id);
-      setMembers((prevMembers) =>
-        prevMembers.filter((member) => member.id !== id)
-      );
-      toast({
-        title: "Membre enregistré avec succès !",
-        type: "foreground",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur lors de l'enregistrement du membre.",
-        type: "foreground",
-        variant: "destructive",
-      });
-    }
+  const handleDeleteMember = (id: number) => {
+    deleteMemberMutation.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "Membre supprimé avec succès !",
+          type: "foreground",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Erreur lors de la suppression du membre.",
+          type: "foreground",
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   const columns = getColumns(handleDeleteMember, handleEditMember);
