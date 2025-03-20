@@ -56,14 +56,14 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
             id="children"
           />
 
-          {data.spouse && (
+          {/* {data.spouse && (
             <Handle
               type="source"
               position={data.gender == "M" ? Position.Right : Position.Left}
               style={{ background: "#fff" }}
               id="spouse"
             />
-          )}
+          )} */}
         </div>
       </SheetTrigger>
 

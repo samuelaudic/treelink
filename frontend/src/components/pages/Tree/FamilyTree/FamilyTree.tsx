@@ -38,6 +38,18 @@ const FamilyTree: React.FC<FamilyTreeProps> = ({ members }) => {
           deathDate: member.deathDate
             ? member.deathDate.toLocaleDateString()
             : null,
+          father: {
+            firstName: member.father?.firstName || "N/A",
+            lastName: member.father?.lastName || "N/A",
+          },
+          mother: {
+            firstName: member.mother?.firstName || "N/A",
+            lastName: member.mother?.lastName || "N/A",
+          },
+          spouse: {
+            firstName: member.spouse?.firstName || "N/A",
+            lastName: member.spouse?.lastName || "N/A",
+          },
         },
         position: { x: 0, y: 0 },
       });
